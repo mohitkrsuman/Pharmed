@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
     res.send("Testing route");
 });
+app.use("/uploads", express.static("uploads"));
 app.use(errorMiddleware);
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
