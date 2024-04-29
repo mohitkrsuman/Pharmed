@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteProduct,
   getAllCategories,
   getAllProducts,
   getLatestProducts,
@@ -25,6 +26,10 @@ app.get("/categories", adminOnly, getAllCategories);
 app.get("/admin-products", adminOnly, getAllProducts);
 
 // -api/v1/product/:id?id=adminId
-app.route("/:id").get(adminOnly, getSingleProduct).put(updateProduct);
+app
+  .route("/:id")
+  .get(adminOnly, getSingleProduct)
+  .put(adminOnly, updateProduct)
+  .delete(adminOnly, deleteProduct);
 
 export default app;

@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllCategories, getAllProducts, getLatestProducts, getSingleProduct, newProduct, updateProduct, } from "../controllers/product.js";
+import { deleteProduct, getAllCategories, getAllProducts, getLatestProducts, getSingleProduct, newProduct, updateProduct, } from "../controllers/product.js";
 import { singleUpload } from "../middlewares/multer.js";
 import { adminOnly } from "../middlewares/auth.js";
 const app = express.Router();
@@ -12,5 +12,9 @@ app.get("/categories", adminOnly, getAllCategories);
 // -api/v1/product/admin-products
 app.get("/admin-products", adminOnly, getAllProducts);
 // -api/v1/product/:id?id=adminId
-app.route("/:id").get(adminOnly, getSingleProduct).put(updateProduct);
+app
+    .route("/:id")
+    .get(adminOnly, getSingleProduct)
+    .put(adminOnly, updateProduct)
+    .delete(adminOnly, deleteProduct);
 export default app;
