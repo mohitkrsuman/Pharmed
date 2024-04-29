@@ -48,3 +48,27 @@ export const getAllCategories = TryCatch(async (req, res, next) => {
         categories,
     });
 });
+export const getAllProducts = TryCatch(async (req, res, next) => {
+    const allProducts = await Product.find({}).lean().exec();
+    if (!allProducts)
+        return next(new ErrorHandler("No Products found", 400));
+    return res.status(200).json({
+        success: true,
+        message: "All categories",
+        allProducts,
+    });
+});
+export const getSingleProduct = TryCatch(async (req, res, next) => {
+    const id = req.params.id;
+    const product = await Product.findById(id);
+    if (!product) {
+        return next(new ErrorHandler(`No product exists with id ${id}`, 400));
+    }
+    return res.status(200).json({
+        success: true,
+        message: `${product.name} is fetched`,
+        product
+    });
+});
+export const updateProduct = TryCatch(async (req, res, next) => {
+});
