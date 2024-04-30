@@ -1,13 +1,14 @@
+import { faker } from "@faker-js/faker";
 import { NextFunction, Request, Response } from "express";
+import { rm } from "fs";
 import { TryCatch } from "../middlewares/error.js";
+import { Product } from "../models/product.js";
 import {
   BaseQuery,
   NewProductRequestBody,
   SearchRequestQuery,
 } from "../types/types.js";
 import ErrorHandler from "../utils/utility-class.js";
-import { Product } from "../models/product.js";
-import { rm } from "fs";
 
 export const newProduct = TryCatch(
   async (
@@ -157,7 +158,10 @@ export const getAllProductsWithFilter = TryCatch(
     const baseQuery: BaseQuery = {};
 
     if (search)
-      baseQuery.name = {$regex: '.*' + search + '.*', $options: 'i'}
+      baseQuery.name = {
+        $regex: search,
+        $options: "i",
+      };
 
     if (price) {
       baseQuery.price = {
@@ -181,6 +185,10 @@ export const getAllProductsWithFilter = TryCatch(
       Product.find(baseQuery),
     ]);
 
+    if(!products){
+       return next(new ErrorHandler("No products found", 400)); 
+    }
+
     const totalPage = Math.ceil(filteredOnlyProduct.length / limit);
     return res.status(200).json({
       success: true,
@@ -190,3 +198,26 @@ export const getAllProductsWithFilter = TryCatch(
     });
   }
 );
+
+// const generateRandomProducts = async(count: number) => {
+//   const products = [];
+
+//   for(let i = 0; i < count; i++){
+//      const product = {
+//        name: faker.commerce.productName(),
+//        photo: "uploads\\cba752-c1fc-449c-be2b-ab1417912cc3.png",
+//        price: faker.commerce.price({min: 1500, max: 43343, dec: 0}),
+//        stock: faker.commerce.price({min: 0, max: 100, dec: 0}),
+//        category: faker.commerce.department(),
+//        createdAt: new Date(faker.date.past()),
+//        updatedAt: new Date(faker.date.recent()),
+//        _v: 0,
+//      }
+
+//      products.push(product);
+//   }
+//   await Product.insertMany(products);
+//   console.log("Products generated successfully");
+// }
+
+// generateRandomProducts(20);
