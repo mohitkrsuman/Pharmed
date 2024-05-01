@@ -3,9 +3,9 @@ import { InvalidateCacheProps } from "../types/types.js";
 import { myCache } from "../app.js";
 import { Product } from "../models/product.js";
 
-export const connectDB = async () => {
+export const connectDB = async (uri: string) => {
   try {
-    const dbConnect = await mongoose.connect("mongodb://localhost:27017", {
+    const dbConnect = await mongoose.connect(uri, {
       dbName: "TscEcom",
     });
 

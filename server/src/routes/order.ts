@@ -5,3 +5,5 @@ import { adminOnly } from '../middlewares/auth.js';
 const app = express.Router();
 
 app.post("/new",adminOnly, newOrder);
+
+export default app;
