@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const orderSchema = new mongoose.Schema({
-    shipppingInfo: {
+    shippingInfo: {
         address: {
             type: String,
             required: true,
@@ -37,11 +37,11 @@ const orderSchema = new mongoose.Schema({
     },
     shippingCharges: {
         type: Number,
-        required: true,
+        default: 0
     },
     discount: {
         type: Number,
-        required: true,
+        default: 0
     },
     total: {
         type: Number,
