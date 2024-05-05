@@ -6,6 +6,7 @@ import productRoute from "./routes/products.js";
 import orderRoute from "./routes/order.js";
 import { connectDB } from "./utils/features.js";
 import NodeCache from "node-cache";
+import morgan from "morgan";
 // import cors from "cors";
 const app = express();
 // config({
@@ -17,6 +18,7 @@ connectDB(process.env.MONGO_DB_URI || "");
 export const myCache = new NodeCache();
 //middlewares
 app.use(express.json());
+app.use(morgan("dev"));
 // app.use(cors());
 //routes
 app.use("/api/v1/user", userRoutes);
