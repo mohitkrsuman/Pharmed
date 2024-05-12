@@ -3,3 +3,4 @@ package-lock.json
 .env
 !dist/controllers/*.js
 !dist/routes/*.js
+dist
