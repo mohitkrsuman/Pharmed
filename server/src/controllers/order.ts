@@ -6,44 +6,6 @@ import { invalidateCache, reduceStock } from "../utils/features.js";
 import ErrorHandler from "../utils/utility-class.js";
 import { myCache } from "../app.js";
 
-export const newOrder = TryCatch(
-  async (req: Request<{}, {}, NewOrderRequestBody>, res, next) => {
-    const {
-      shippingInfo,
-      orderItems,
-      user,
-      subtotal,
-      tax,
-      shippingCharges,
-      discount,
-      total,
-    } = req.body;
-
-    if (!shippingInfo || !orderItems || !user || !subtotal || !tax || !total) {
-      return next(new ErrorHandler("Please enter all fields!", 400));
-    }
-
-    await Order.create({
-      shippingInfo,
-      orderItems,
-      user,
-      subtotal,
-      shippingCharges,
-      discount,
-      tax,
-      total,
-    });
-
-    await reduceStock(orderItems);
-    await invalidateCache({ product: true, order: true, admin: true });
-
-    return res.status(201).json({
-      success: true,
-      message: "Order placed successfully",
-    });
-  }
-);
-
 export const myOrders = TryCatch(async (req, res, next) => {
    const { id: user } = req.query;
    let orders = [];
@@ -106,3 +68,41 @@ export const getSingleOrder = TryCatch(async(req, res, next) => {
       order
     });
 });
+
+export const newOrder = TryCatch(
+  async (req: Request<{}, {}, NewOrderRequestBody>, res, next) => {
+    const {
+      shippingInfo,
+      orderItems,
+      user,
+      subtotal,
+      tax,
+      shippingCharges,
+      discount,
+      total,
+    } = req.body;
+
+    if (!shippingInfo || !orderItems || !user || !subtotal || !tax || !total) {
+      return next(new ErrorHandler("Please enter all fields!", 400));
+    }
+
+    await Order.create({
+      shippingInfo,
+      orderItems,
+      user,
+      subtotal,
+      shippingCharges,
+      discount,
+      tax,
+      total,
+    });
+
+    await reduceStock(orderItems);
+    await invalidateCache({ product: true, order: true, admin: true });
+
+    return res.status(201).json({
+      success: true,
+      message: "Order placed successfully",
+    });
+  }
+);
