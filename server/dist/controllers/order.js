@@ -49,12 +49,33 @@ export const allOrders = TryCatch(async (req, res, next) => {
         orders = JSON.parse(myCache.get(key));
     }
     else {
-        orders = await Order.find({});
+        // populate the user field and retreive only the name field
+        orders = await Order.find({}).populate("user", "name");
         myCache.set(key, JSON.stringify(orders));
     }
     return res.status(200).json({
         success: true,
         message: "All orders fetched successfully",
         orders
+    });
+});
+export const getSingleOrder = TryCatch(async (req, res, next) => {
+    const { id } = req.params;
+    const key = `order-${id}`;
+    let order;
+    if (myCache.has(key)) {
+        order = JSON.parse(myCache.get(key));
+    }
+    else {
+        order = await Order.findById(id).populate("user", "name");
+        if (!order) {
+            return next(new ErrorHandler("Order not found", 404));
+        }
+        myCache.set(key, JSON.stringify(order));
+    }
+    return res.status(200).json({
+        success: true,
+        message: "Order fetched successfully",
+        order
     });
 });
