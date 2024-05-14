@@ -35,16 +35,15 @@ export const invalidateCache = async ({
       "latestProducts",
     ];
 
-    if (productId && typeof productId === "string") {
+    if (typeof productId === "string") {
       productKeys.push(`product-${productId}`);
     }
-    if (productId && typeof productId === "object") {
+    if (typeof productId === "object") {
       productId.forEach((id) => {
         productKeys.push(`product-${id}`);
       });
-      console.log("log");
     }
-
+    console.log("deleted keys");
     myCache.del(productKeys);
   }
   if (order) {
