@@ -24,7 +24,9 @@ export const invalidateCache = async ({
   product,
   order,
   admin,
-  userId
+  userId,
+  orderId,
+  productId,
 }: InvalidateCacheProps) => {
   if (product) {
     const productKeys: string[] = [
@@ -33,19 +35,24 @@ export const invalidateCache = async ({
       "latestProducts",
     ];
 
-    const products = await Product.find({}).select("_id");
-    products.forEach((product) => {
-      productKeys.push(`product-${product._id}`);
-    });
+    if (productId && typeof productId === "string") {
+      productKeys.push(`product-${productId}`);
+    }
+    if (productId && typeof productId === "object") {
+      productId.forEach((id) => {
+        productKeys.push(`product-${id}`);
+      });
+      console.log("log");
+    }
 
     myCache.del(productKeys);
   }
   if (order) {
-    const orderKeys: string[] = ["all-orders", `my-orders-${userId}`];
-    const orders = await Order.find({}).select("_id");
-    orders.forEach((order)=> {
-      orderKeys.push(`order-${order._id}`);
-    });
+    const orderKeys: string[] = [
+      "all-orders",
+      `my-orders-${userId}`,
+      `order-${orderId}`,
+    ];
 
     myCache.del(orderKeys);
   }
@@ -53,16 +60,15 @@ export const invalidateCache = async ({
   }
 };
 
+export const reduceStock = async (orderItems: OrderItemType[]) => {
+  for (let i = 0; i < orderItems.length; i++) {
+    const order = orderItems[i];
+    const product = await Product.findById(order.productId);
 
-export const reduceStock = async(orderItems: OrderItemType[]) => {
-   for(let i = 0; i < orderItems.length; i++){
-     const order = orderItems[i];
-     const product = await Product.findById(order.productId);
-     
-     if(!product){
-        throw new Error("Product not found");
-     }
-     product.stock -= order.quantity;
-     await product.save();
-   }
-}
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    product.stock -= order.quantity;
+    await product.save();
+  }
+};

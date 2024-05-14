@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { myCache } from "../app.js";
 import { Product } from "../models/product.js";
-import { Order } from "../models/order.js";
 export const connectDB = async (uri) => {
     try {
         const dbConnect = await mongoose.connect(uri, {
@@ -15,25 +14,30 @@ export const connectDB = async (uri) => {
         console.log("Issue in connecting with database");
     }
 };
-export const invalidateCache = async ({ product, order, admin, userId }) => {
+export const invalidateCache = async ({ product, order, admin, userId, orderId, productId, }) => {
     if (product) {
         const productKeys = [
             "categories",
             "allProducts",
             "latestProducts",
         ];
-        const products = await Product.find({}).select("_id");
-        products.forEach((product) => {
-            productKeys.push(`product-${product._id}`);
-        });
+        if (productId && typeof productId === "string") {
+            productKeys.push(`product-${productId}`);
+        }
+        if (productId && typeof productId === "object") {
+            productId.forEach((id) => {
+                productKeys.push(`product-${id}`);
+            });
+            console.log("log");
+        }
         myCache.del(productKeys);
     }
     if (order) {
-        const orderKeys = ["all-orders", `my-orders-${userId}`];
-        const orders = await Order.find({}).select("_id");
-        orders.forEach((order) => {
-            orderKeys.push(`order-${order._id}`);
-        });
+        const orderKeys = [
+            "all-orders",
+            `my-orders-${userId}`,
+            `order-${orderId}`,
+        ];
         myCache.del(orderKeys);
     }
     if (admin) {
