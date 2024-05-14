@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { myCache } from "../app.js";
 import { Product } from "../models/product.js";
+import { Order } from "../models/order.js";
 export const connectDB = async (uri) => {
     try {
         const dbConnect = await mongoose.connect(uri, {
@@ -14,7 +15,7 @@ export const connectDB = async (uri) => {
         console.log("Issue in connecting with database");
     }
 };
-export const invalidateCache = async ({ product, order, admin, }) => {
+export const invalidateCache = async ({ product, order, admin, userId }) => {
     if (product) {
         const productKeys = [
             "categories",
@@ -28,6 +29,12 @@ export const invalidateCache = async ({ product, order, admin, }) => {
         myCache.del(productKeys);
     }
     if (order) {
+        const orderKeys = ["all-orders", `my-orders-${userId}`];
+        const orders = await Order.find({}).select("_id");
+        orders.forEach((order) => {
+            orderKeys.push(`order-${order._id}`);
+        });
+        myCache.del(orderKeys);
     }
     if (admin) {
     }
