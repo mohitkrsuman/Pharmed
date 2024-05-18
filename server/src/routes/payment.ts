@@ -4,17 +4,17 @@ import { applyDiscount, deleteCoupons, getAllCoupons, newCoupon } from '../contr
 
 const app = express.Router();
 
-// Route -/api/v1/payment/coupon/new
-app.post("/coupon/new", newCoupon);
-
 // Route -/api/v1/payment/coupon/discount
 app.get("/discount", applyDiscount);
 
+// Route -/api/v1/payment/coupon/new
+app.post("/coupon/new", adminOnly, newCoupon);
+
 // Route -/api/v1/payment/coupon/allCoupons
-app.get("/coupon/all", getAllCoupons);
+app.get("/coupon/all", adminOnly, getAllCoupons);
 
 // Route -/api/v1/payment/coupon/deleteCoupon
-app.delete("/coupon/:id", deleteCoupons);
+app.delete("/coupon/:id", adminOnly, deleteCoupons);
 
 
 export default app;
