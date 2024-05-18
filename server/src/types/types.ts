@@ -78,3 +78,8 @@ export interface NewOrderRequestBody{
    total: number,
    orderItems: OrderItemType[]
 }
+
+export interface MonthType{
+  start: Date,
+  end: Date
+}

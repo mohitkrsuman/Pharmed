@@ -9,8 +9,10 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
     stats = JSON.parse(myCache.get("admin-stats") as string);
   } else {
     const today = new Date();
-    const startOfThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfThisMonth = today;
+    const thisMonth = {
+      start: new Date(today.getFullYear(), today.getMonth(), 1),
+      end: today
+    }
     let startOfLastMonth, endOfLastMonth;
     if (today.getMonth() === 1) {
       startOfLastMonth = new Date(today.getFullYear() - 1, 12, 1);
@@ -19,14 +21,18 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
       startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
       endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
     }
+    const lastMonth = {
+      start: startOfLastMonth,
+      end: endOfLastMonth
+    }
 
     const thisMonthProduct = await Product.find({
       createdAt:{
-         $gte: startOfThisMonth,
-         $lte: endOfThisMonth
+         $gte: thisMonth.start,
+         $lte: thisMonth.end
       }
     });
-
+    
    //  console.log(endOfLastMonth.toDateString());
   }
 
