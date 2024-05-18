@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user.js";
 import productRoute from "./routes/products.js";
 import orderRoute from "./routes/order.js";
+import paymentRoute from "./routes/payment.js";
 import { connectDB } from "./utils/features.js";
 import NodeCache from "node-cache";
 import morgan from "morgan";
@@ -24,6 +25,7 @@ app.use(morgan("dev"));
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/payment", paymentRoute);
 app.get("/", (req, res) => {
     res.send("Everything is working properly");
 });
