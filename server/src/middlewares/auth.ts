@@ -15,7 +15,7 @@ export const adminOnly = TryCatch(async (req, res, next) => {
     return next(new ErrorHandler("Wrong Credentials", 401));
   }
   if (user.role !== "admin") {
-    return next(new ErrorHandler("Only for admin", 401));
+    return next(new ErrorHandler("Only for admin", 403));
   }
 
   next();

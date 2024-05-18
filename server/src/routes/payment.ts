@@ -8,7 +8,7 @@ const app = express.Router();
 app.post("/coupon/new", newCoupon);
 
 // Route -/api/v1/payment/coupon/new
-app.post("/discount", applyDiscount);
+app.get("/discount", applyDiscount);
 
 
 export default app;
