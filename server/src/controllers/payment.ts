@@ -40,3 +40,13 @@ export const getAllCoupons = TryCatch(async(req, res, next) => {
       coupons
    });
 });
+
+export const deleteCoupons = TryCatch(async(req, res, next) => {
+   const { id } = req.params;
+   await Coupon.findByIdAndDelete(id);
+
+   return res.status(200).json({
+      success: true,
+      message: `Coupon Deleted Successfully`
+   });
+});
