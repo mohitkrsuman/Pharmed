@@ -3,6 +3,7 @@ import { InvalidateCacheProps, OrderItemType } from "../types/types.js";
 import { myCache } from "../app.js";
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
+import { StringDecoder } from "string_decoder";
 
 export const connectDB = async (uri: string) => {
   try {
@@ -72,9 +73,30 @@ export const reduceStock = async (orderItems: OrderItemType[]) => {
   }
 };
 
-
 export const calculatePercentage = (thisMonth: number, lastMonth: number) => {
-  if(lastMonth === 0) return thisMonth*100;
-    const percent = ((thisMonth - lastMonth)/lastMonth)*100;
-    return Number(percent.toFixed(0));
-}
+  if (lastMonth === 0) return thisMonth * 100;
+  const percent = ((thisMonth - lastMonth) / lastMonth) * 100;
+  return Number(percent.toFixed(0));
+};
+
+export const getCategoriesCount = async ({
+  categories,
+  productsCount
+}: {
+  categories: string[];
+  productsCount: number
+}) => {
+  const categoriesCountPromise = categories.map((category) =>
+    Product.countDocuments({ category })
+  );
+
+  const categoriesCount = await Promise.all(categoriesCountPromise);
+  const categoryCount: Record<string, number>[] = [];
+
+  categories.forEach((category, i) => {
+    categoryCount.push({
+      [category]: Math.round((categoriesCount[i] / productsCount) * 100),
+    });
+  });
+  return categoryCount;
+};
