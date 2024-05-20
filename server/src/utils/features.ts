@@ -100,3 +100,27 @@ export const getCategoriesCount = async ({
   });
   return categoryCount;
 };
+
+interface MyDocument extends Document { 
+  createdAt: Date,
+}
+
+type funcProps = {
+  length : number,
+  docArr: MyDocument[],
+  today: Date
+}
+
+export const getChartData = ({length, docArr, today} : funcProps) => {
+  const data: number[] = new Array(length).fill(0);
+
+  docArr.forEach((i) => {
+    const creationDate = i.createdAt;
+    const monthDiff = (today.getMonth() - creationDate.getMonth() + 12) % 12;
+    if (monthDiff < length) {
+      data[length - monthDiff - 1] += 1;
+    }
+  });
+
+  return data;
+}

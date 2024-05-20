@@ -3,7 +3,11 @@ import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import User from "../models/user.js";
-import { calculatePercentage, getCategoriesCount } from "../utils/features.js";
+import {
+  calculatePercentage,
+  getCategoriesCount,
+  getChartData,
+} from "../utils/features.js";
 
 export const getDashboardStats = TryCatch(async (req, res, next) => {
   let stats = {};
@@ -240,7 +244,7 @@ export const getPieCharts = TryCatch(async (req, res, next) => {
       allOrders,
       allusers,
       adminUsers,
-      customers
+      customers,
     ] = await Promise.all([
       Order.countDocuments({ status: "Processing" }),
       Order.countDocuments({ status: "Shipped" }),
@@ -302,15 +306,15 @@ export const getPieCharts = TryCatch(async (req, res, next) => {
     };
 
     const usersAgeGroup = {
-      teen: allusers.filter(i => i.age < 20).length,
-      adult: allusers.filter(i => i.age >= 20 && i.age <= 40).length,
-      old: allusers.filter(i => i.age > 40).length
-    }
+      teen: allusers.filter((i) => i.age < 20).length,
+      adult: allusers.filter((i) => i.age >= 20 && i.age <= 40).length,
+      old: allusers.filter((i) => i.age > 40).length,
+    };
 
     const adminCustomer = {
-      admin: adminUsers, 
-      customer: customers
-    }
+      admin: adminUsers,
+      customer: customers,
+    };
 
     charts = {
       orderFullfillment,
@@ -318,7 +322,7 @@ export const getPieCharts = TryCatch(async (req, res, next) => {
       stockAvailiability,
       revenueDistribution,
       adminCustomer,
-      usersAgeGroup
+      usersAgeGroup,
     };
 
     myCache.set(key, JSON.stringify(charts));
@@ -330,6 +334,87 @@ export const getPieCharts = TryCatch(async (req, res, next) => {
   });
 });
 
-export const getBarCharts = TryCatch(async (req, res, next) => {});
+export const getBarCharts = TryCatch(async (req, res, next) => {
+  let charts = {};
 
-export const getLineCharts = TryCatch(async (req, res, next) => {});
+  const key = "admin-bar-charts";
+  if (myCache.has(key)) {
+    charts = JSON.parse(myCache.get(key) as string);
+  } else {
+    const today = new Date();
+    const sixMonthAgo = new Date();
+    sixMonthAgo.setMonth(sixMonthAgo.getMonth() - 6);
+
+    const tweleveMonthAgo = new Date();
+    tweleveMonthAgo.setMonth(tweleveMonthAgo.getMonth() - 12);
+
+    const sixMonthProductPromise = Product.find({
+      createdAt: { $gte: sixMonthAgo, $lte: today },
+    }).select("createdAt");
+
+    const sixMonthUserPromise = User.find({
+      createdAt: { $gte: sixMonthAgo, $lte: today },
+    }).select("createdAt");
+
+    const tweleveMonthOrderPromise = Order.find({
+      createdAt: { $gte: tweleveMonthAgo, $lte: today },
+    }).select("createdAt");
+
+    const [products, users, orders] = await Promise.all([
+      sixMonthProductPromise,
+      sixMonthUserPromise,
+      tweleveMonthOrderPromise,
+    ]);
+
+    const usersCounts = getChartData({ length: 6, docArr: users, today });
+    // const productsCounts = getChartData({ length: 6, docArr: products, today });
+
+    charts = {
+      users: usersCounts,
+    };
+
+    myCache.set(key, JSON.stringify(charts));
+  }
+
+  return res.status(200).send({
+    success: true,
+    charts,
+  });
+});
+
+export const getLineCharts = TryCatch(async (req, res, next) => {
+  // let charts = {};
+
+  // const key = "admin-line-charts"; 
+  // if (myCache.has(key)) {
+  //   charts = JSON.parse(myCache.get(key) as string);
+  // } else {
+  //   const today = new Date();
+
+  //   const tweleveMonthAgo = new Date();
+  //   tweleveMonthAgo.setMonth(tweleveMonthAgo.getMonth() - 12);
+
+  //   const baseQuery = {
+  //     createdAt: { $gte: tweleveMonthAgo, $lte: today },
+  //   }
+
+  //   const [products, users, orders] = await Promise.all([
+  //     Product.find(baseQuery).select("createdAt"),
+  //     User.find(baseQuery).select("createdAt"),
+  //     Order.find(baseQuery).select("createdAt")
+  //   ]);
+
+  //   const usersCounts = getChartData({ length: 12, docArr: users, today });
+
+  //   charts = {
+  //     users: usersCounts,
+  //   };
+
+  //   myCache.set(key, JSON.stringify(charts));
+  // }
+
+  // return res.status(200).send({
+  //   success: true,
+  //   charts,
+  // });
+});
