@@ -1,5 +1,6 @@
 import express from "express";
 import { errorMiddleware } from "./middlewares/error.js";
+import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.js";
 import productRoute from "./routes/products.js";
@@ -21,7 +22,7 @@ export const myCache = new NodeCache();
 //middlewares
 app.use(express.json());
 app.use(morgan("dev"));
-// app.use(cors());
+app.use(cors());
 //routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoute);
