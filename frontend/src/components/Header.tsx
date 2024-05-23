@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaPlus,
   FaSearch,
@@ -9,6 +9,9 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { user } from "../types/types";
+import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
+import { auth } from "../firebase";
 
 interface PropsType{
   user: user | null
@@ -17,10 +20,16 @@ interface PropsType{
 const Header = ({user}: PropsType) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const logoutHandler = () => {
-    setIsOpen(false);
-    console.log("logout");
+  const logoutHandler = async() => {
+    try{
+       await signOut(auth);
+       toast.success("Sign out successfully");
+       setIsOpen(false);
+    }catch(err){
+       toast.error("Sign out fail");
+    }
   };
+
   return (
     <nav className="header">
       <div className="pharmedTitle">

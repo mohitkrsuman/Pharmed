@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userExist, userNotExist } from "./redux/reducer/userReducer";
 import { getUser } from "./redux/api/userAPI";
 import { UserReducerInitialState } from "./types/reducer-types";
+import ProtectedRoute from "./components/protected-route";
 // import Shipping from "./pages/Shipping";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -42,7 +43,7 @@ const TransactionManagement = lazy(
 
 const App = () => {
   const dispatch = useDispatch();
-  const { user, loading} = useSelector(
+  const { user, loading } = useSelector(
     (state: { user: UserReducerInitialState }) => state.user
   );
 
@@ -56,7 +57,9 @@ const App = () => {
       }
     });
   }, []);
-  return loading ? <Loader/> : (
+  return loading ? (
+    <Loader />
+  ) : (
     <Router>
       <Header user={user} />
       <Suspense fallback={<Loader />}>
@@ -67,23 +70,32 @@ const App = () => {
           <Route path="*" element={<Home />} />
 
           {/* Not logged in route */}
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={
+              <ProtectedRoute isAuthenticated={user ? false : true}>
+                <Login />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Logged in User Routes */}
-          <Route path="/shipping" element={<Shipping />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/order/:id" element={<OrderDetails />} />
+          <Route element={<ProtectedRoute isAuthenticated={user ? true : false}/>}>
+            <Route path="/shipping" element={<Shipping />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/order/:id" element={<OrderDetails />} />
+          </Route>
 
           {/* Admin Routes */}
 
           <Route
-          // element={
-          //   <ProtectedRoute
-          //     isAuthenticated={true}
-          //     adminRoute={true}
-          //     isAdmin={true}
-          //   />
-          // }
+          element={
+            <ProtectedRoute
+              isAuthenticated={true}
+              adminOnly={true}
+              isAdmin={user?.role === "admin" ? true : false}
+            />
+          }
           >
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/product" element={<Products />} />
