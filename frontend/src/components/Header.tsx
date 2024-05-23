@@ -8,10 +8,13 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { user } from "../types/types";
 
-const user = { _id: "", role: "" };
+interface PropsType{
+  user: user | null
+}
 
-const Header = () => {
+const Header = ({user}: PropsType) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const logoutHandler = () => {
