@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import { useLatestProductsQuery } from "../redux/api/productAPI";
 
 const Home = () => {
   const addToCartHandler = () => {};
+
+  const { data } = useLatestProductsQuery("");
 
   return (
     <div className="home">
@@ -14,14 +17,17 @@ const Home = () => {
         </Link>
       </h1>
       <main>
-        <ProductCard
-          productId="sagfs"
-          name="FaceWash"
-          price={127}
-          stock={20}
-          handler={addToCartHandler}
-          photo="https://www.netmeds.com/images/product-v1/150x150/1049383/cetaphil_moisturizing_lotion_normal_to_combination_sensitive_skin_100_ml_424186_0_4.jpg"
-        />
+        {data?.products.map((item) => (
+          <ProductCard
+            key={item._id}
+            productId={item._id}
+            name={item.name}
+            price={item.price}
+            stock={item.stock}
+            handler={addToCartHandler}
+            photo={item.photo}
+          />
+        ))}
       </main>
     </div>
   );
