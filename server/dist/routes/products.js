@@ -8,7 +8,7 @@ app.get("/all", getAllProductsWithFilter);
 // -api/v1/product/new
 app.post("/new", adminOnly, singleUpload, newProduct);
 // -api/v1/product/latest
-app.get("/latest", adminOnly, getLatestProducts);
+app.get("/latest", getLatestProducts);
 // -api/v1/product/categories
 app.get("/categories", adminOnly, getAllCategories);
 // -api/v1/product/admin-products
