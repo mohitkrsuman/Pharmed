@@ -1,12 +1,35 @@
 import { useState } from "react";
 import ProductCard from "../components/ProductCard";
+import {
+  useCategoriesQuery,
+  useSearchProductsQuery,
+} from "../redux/api/productAPI";
+import { customError } from "../types/api-types";
+import toast from "react-hot-toast";
 
 const Search = () => {
+  const {
+    data: categoriesResponse,
+    isLoading: loadingCategories,
+    isError,
+    error,
+  } = useCategoriesQuery("");
+
+  if (isError) {
+    const err = error as customError;
+    toast.error(err.data.message);
+  }
+
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
-  const [maxPrice, setMaxPrice] = useState(10000);
+  const [maxPrice, setMaxPrice] = useState(25000);
   const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
+
+  const { isLoading: productLoading, data: searchedData } =
+    useSearchProductsQuery({ search, sort, category, price: maxPrice, page });
+
+  console.log(searchedData);
 
   const addToCartHandle = () => {
     console.log("Added to cart");
@@ -47,9 +70,12 @@ const Search = () => {
             onChange={(e) => setCategory(e.target.value)}
           >
             <option value="">All</option>
-            <option value="asc">Personal HealthCare</option>
-            <option value="dsc">Balms & Sprays</option>
-            <option value="dsc">Healthy Drinks</option>
+            {!loadingCategories &&
+              categoriesResponse?.categories.map((i) => (
+                <option key={i} value={i}>
+                  {i.toUpperCase()}
+                </option>
+              ))}
           </select>
         </div>
       </aside>
@@ -64,20 +90,34 @@ const Search = () => {
         />
 
         <div className="searchProductList">
-          <ProductCard
-            productId="sagfs"
-            name="FaceWash"
-            price={127}
-            stock={20}
-            handler={addToCartHandle}
-            photo="https://www.netmeds.com/images/product-v1/150x150/1049383/cetaphil_moisturizing_lotion_normal_to_combination_sensitive_skin_100_ml_424186_0_4.jpg"
-          />
+          {searchedData?.products.map((product) => (
+            <ProductCard
+              productId={product._id}
+              name={product.name}
+              price={product.price}
+              stock={product.stock}
+              handler={addToCartHandle}
+              photo={product.photo}
+            />
+          ))}
         </div>
 
         <article>
-           <button disabled={!isPrevPage} onClick={() => setPage(prev => prev-1)}>Prev</button>
-           <span>{page} of {4}</span>
-           <button disabled={!isNextPage} onClick={() => setPage(prev => prev+1)}>Next</button>
+          <button
+            disabled={!isPrevPage}
+            onClick={() => setPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+          <span>
+            {page} of {4}
+          </span>
+          <button
+            disabled={!isNextPage}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
         </article>
       </main>
     </div>

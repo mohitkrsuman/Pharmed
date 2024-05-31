@@ -24,7 +24,7 @@ app.post("/new", adminOnly, singleUpload, newProduct);
 app.get("/latest", getLatestProducts);
 
 // -api/v1/product/categories
-app.get("/categories", adminOnly, getAllCategories);
+app.get("/categories", getAllCategories);
 
 // -api/v1/product/admin-products
 app.get("/admin-products", adminOnly, getAllProducts);
