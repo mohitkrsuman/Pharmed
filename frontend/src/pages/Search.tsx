@@ -6,6 +6,7 @@ import {
 } from "../redux/api/productAPI";
 import { customError } from "../types/api-types";
 import toast from "react-hot-toast";
+import { Product } from "../types/types";
 
 const Search = () => {
   const {
@@ -28,8 +29,6 @@ const Search = () => {
 
   const { isLoading: productLoading, data: searchedData } =
     useSearchProductsQuery({ search, sort, category, price: maxPrice, page });
-
-  console.log(searchedData);
 
   const addToCartHandle = () => {
     console.log("Added to cart");
@@ -90,7 +89,7 @@ const Search = () => {
         />
 
         <div className="searchProductList">
-          {searchedData?.products.map((product) => (
+          {searchedData?.products.map((product: Product) => (
             <ProductCard
               productId={product._id}
               name={product.name}
@@ -102,23 +101,25 @@ const Search = () => {
           ))}
         </div>
 
-        <article>
-          <button
-            disabled={!isPrevPage}
-            onClick={() => setPage((prev) => prev - 1)}
-          >
-            Prev
-          </button>
-          <span>
-            {page} of {4}
-          </span>
-          <button
-            disabled={!isNextPage}
-            onClick={() => setPage((prev) => prev + 1)}
-          >
-            Next
-          </button>
-        </article>
+        {searchedData && searchedData?.totalPage > 1 && (
+          <article>
+            <button
+              disabled={!isPrevPage}
+              onClick={() => setPage((prev) => prev - 1)}
+            >
+              Prev
+            </button>
+            <span>
+              {page} of {4}
+            </span>
+            <button
+              disabled={!isNextPage}
+              onClick={() => setPage((prev) => prev + 1)}
+            >
+              Next
+            </button>
+          </article>
+        )}
       </main>
     </div>
   );

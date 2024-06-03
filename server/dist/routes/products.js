@@ -16,7 +16,7 @@ app.get("/admin-products", adminOnly, getAllProducts);
 // -api/v1/product/:id?id=adminId
 app
     .route("/:id")
-    .get(adminOnly, getSingleProduct)
-    .put(adminOnly, updateProduct)
+    .get(getSingleProduct)
+    .put(adminOnly, singleUpload, updateProduct)
     .delete(adminOnly, deleteProduct);
 export default app;

@@ -25,6 +25,12 @@ export type AllProductsResponse = {
    allProducts: Product[];
 }
 
+export type ProductResponse = {
+   success: boolean;
+   message?: string;
+   product: Product;
+}
+
 export type CategoriesResponse = {
    success: boolean;
    message?: string;
@@ -42,6 +48,22 @@ export type SearchProductsRequest = {
    price: number;
    page: number;
    category: string;
-   name: string;
+   search: string;
    sort: string;
+}
+
+export type NewProductRequest = {
+   id: string;
+   formData: FormData;
+}
+
+export type UpdateProductRequest = {
+   userId: string;
+   productId: string;
+   formData: FormData;
+}
+
+export type DeleteProductRequest = {
+   userId: string;
+   productId: string;
 }
