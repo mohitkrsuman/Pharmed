@@ -80,7 +80,8 @@ const Productmanagement = () => {
       responseToast(res, navigate, "/admin/product");
     }
   };
-
+ console.log(data?.product._id);
+ 
   const deleteHandler = async () => {
     const res = await deleteProduct({
       userId: user?._id!,
@@ -89,6 +90,7 @@ const Productmanagement = () => {
 
     responseToast(res, navigate, "/admin/product");
   };
+ 
 
   useEffect(() => {
     if (data) {
