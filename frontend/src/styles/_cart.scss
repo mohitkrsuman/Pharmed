@@ -65,6 +65,7 @@
 
 .cart-item{
    padding: 1rem;
+   margin-top: 1rem;
    @include flex(row, flex-start, center, 3rem);
    background-color: rgba(194, 244, 194, 0.627);
    border-radius: 12px;

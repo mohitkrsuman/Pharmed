@@ -22,7 +22,7 @@ export type UserResponse = {
 export type AllProductsResponse = {
    success: boolean;
    message?: string;
-   allProducts: Product[];
+   products: Product[];
 }
 
 export type ProductResponse = {

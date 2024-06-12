@@ -1,32 +1,47 @@
 import { useEffect, useState } from "react";
 import { VscError } from "react-icons/vsc";
-import CartItem from "../components/CartItem";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
-const cartItems = [
-  {
-    productId: "aggerg",
-    photo:
-      "https://www.netmeds.com/images/product-v1/150x150/1049383/cetaphil_moisturizing_lotion_normal_to_combination_sensitive_skin_100_ml_424186_0_4.jpg",
-    name: "Cetaphil",
-    price: 127,
-    quantity: 4,
-    stock: 10,
-  },
-];
-const subtotal = 4000;
-const discount = 400;
-const tax = Math.round(subtotal * 0.18);
-const shippingCharges = 200;
-const total = subtotal + tax + shippingCharges;
+import CartItemCard from "../components/CartItem";
+import { addToCart, removeCartItems } from "../redux/reducer/cartReducer";
+import { CartReducerInitialState } from "../types/reducer-types";
+import { CartItem } from "../types/types";
+import toast from "react-hot-toast";
 
 const Cart = () => {
+  const { cartItems, subtotal, tax, total, shippingCharges, discount } =
+    useSelector(
+      (state: { cartReducer: CartReducerInitialState }) => state.cartReducer
+    );
+  const dispatch = useDispatch();
+
   const [couponCode, setCouponCode] = useState<string>("");
   const [isValidCouponCode, setIsValidCouponCode] = useState<boolean>(false);
 
+  const incrementHandler = (cartItem: CartItem) => {
+    if (cartItem.quantity >= cartItem.stock) {
+      toast.error("Cannot add more than available stock");
+    } else {
+      dispatch(addToCart({ ...cartItem, quantity: cartItem.quantity + 1 }));
+      toast.success("Item added to cart");
+    }
+  };
+
+  const decrementHandler = (cartItem: CartItem) => {
+    if(cartItem.quantity <= 1){
+      toast.error("Cannot decrease quantity less than 1");
+    }else{
+      dispatch(addToCart({ ...cartItem, quantity: cartItem.quantity - 1 }));
+    }
+  };
+
+  const removeHandler = (productId: string) => {
+    dispatch(removeCartItems(productId));
+  };
+
   useEffect(() => {
     const timeOutId = setTimeout(() => {
-      if (Math.random()*1 > 0.5) {
+      if (Math.random() * 1 > 0.5) {
         setIsValidCouponCode(true);
       } else {
         setIsValidCouponCode(false);
@@ -43,7 +58,15 @@ const Cart = () => {
     <div className="cart">
       <main>
         {cartItems.length > 0 ? (
-          cartItems.map((i, idx) => <CartItem key={idx} cartItem={i} />)
+          cartItems.map((i, idx) => (
+            <CartItemCard
+              key={idx}
+              cartItem={i}
+              decrementHandler={decrementHandler}
+              incrementHandler={incrementHandler}
+              removeHandler={removeHandler}
+            />
+          ))
         ) : (
           <h1>No items Added</h1>
         )}

@@ -17,3 +17,21 @@ export interface Product {
    category: string;
    _id: string;
  }
+
+ 
+export type CartItem = {
+   productId: string;
+   photo: string;
+   name: string;
+   price: number;
+   quantity: number;
+   stock: number;
+ }
+
+ export type ShippingInfo = {
+   address: string;
+   city: string;
+   state: string;
+   country: string;
+   pinCode: string;
+ }
