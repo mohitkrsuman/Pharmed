@@ -68,6 +68,7 @@ export type ShippingInfoType = {
    pinCode: number;
 }
 
+
 export interface NewOrderRequestBody{
    shippingInfo: ShippingInfoType,
    user: string,

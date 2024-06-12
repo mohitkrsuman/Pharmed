@@ -1,13 +1,23 @@
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { useLatestProductsQuery } from "../redux/api/productAPI";
-import toast from "react-hot-toast";
-import { SkeletonLoader } from "../components/Loader";
+import { CartItem, Product } from "../types/types";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/reducer/cartReducer";
 
 const Home = () => {
-  const addToCartHandler = () => {};
+  const dispatch = useDispatch();
 
-  const { data, isLoading, isError } = useLatestProductsQuery("");
+  const addToCartHandler = (cartItem: CartItem) => {
+    if(cartItem.stock < 1){
+       return toast.error("Out of Stock");
+    }
+  
+    dispatch(addToCart(cartItem));
+  };
+
+  const { data, isError } = useLatestProductsQuery("");
 
   if (isError) {
     toast.error("Cannot fetch the products");
@@ -22,11 +32,8 @@ const Home = () => {
           More
         </Link>
       </h1>
-      <main>
-        {isLoading ? (
-          <SkeletonLoader width="80vw"/>
-        ) : (
-          data?.products.map((item) => (
+      <main> 
+          {data?.products.map((item: Product) => (
             <ProductCard
               key={item._id}
               productId={item._id}
@@ -36,8 +43,7 @@ const Home = () => {
               handler={addToCartHandler}
               photo={item.photo}
             />
-          ))
-        )}
+          ))}
       </main>
     </div>
   );
