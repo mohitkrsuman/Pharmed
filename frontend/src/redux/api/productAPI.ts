@@ -32,7 +32,7 @@ export const productAPI = createApi({
     }),
     searchProducts: builder.query<
       SearchProductsResponse,
-      SearchProductsRequest
+      SearchProductsRequest 
     >({
       query: ({ price, search, sort, category, page }) => {
         let base = `all?search=${search}&page=${page}`;
